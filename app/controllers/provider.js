@@ -595,7 +595,7 @@ exports.editProviderAcademicYears_get = async (req, res) => {
 
   res.render('providers/academic-years/academic-years', {
     provider,
-    caption: 'Add provider',
+    caption: provider.operatingName,
     academicYearItems,
     selectedAcademicYears,
     errors: [],
@@ -635,7 +635,7 @@ exports.editProviderAcademicYears_post = async (req, res) => {
   if (errors.length) {
     res.render('providers/academic-years/academic-years', {
       provider,
-      caption: 'Add provider',
+      caption: provider.operatingName,
       academicYearItems,
       selectedAcademicYears,
       errors,
