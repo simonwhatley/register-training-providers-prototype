@@ -714,11 +714,14 @@ exports.editProviderAcademicYearsCheck_post = async (req, res) => {
   const now = new Date()
 
   for (const record of toDelete) {
-    await record.update({
-      deletedAt: now,
-      deletedById: userId,
-      updatedById: userId
-    })
+    await record.update(
+      {
+        deletedAt: now,
+        deletedById: userId,
+        updatedById: userId
+      },
+      { revisionAt: now }
+    )
   }
 
   if (toAdd.length) {
@@ -733,7 +736,8 @@ exports.editProviderAcademicYearsCheck_post = async (req, res) => {
 
     await ProviderAcademicYear.bulkCreate(rows, {
       individualHooks: true,
-      returning: true
+      returning: true,
+      revisionAt: now
     })
   }
 
@@ -1342,7 +1346,8 @@ exports.newProviderCheck_post = async (req, res) => {
 
     await ProviderAcademicYear.bulkCreate(rows, {
       individualHooks: true,
-      returning: true
+      returning: true,
+      revisionAt: now
     })
   }
 
