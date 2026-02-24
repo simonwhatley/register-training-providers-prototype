@@ -62,7 +62,7 @@ const revisionHook = ({ revisionModelName, modelKey }) => {
       ...pickForRevision(src),
       [`${modelKey}Id`]: instance.id,
       revisionById,
-      revisionAt: new Date(),
+      revisionAt: options.revisionAt || new Date(),
       ...overrides
     })
 

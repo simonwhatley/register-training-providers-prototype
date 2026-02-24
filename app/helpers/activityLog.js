@@ -140,7 +140,6 @@ const collapseProviderAcademicYearLogs = (logs) => {
       log.revisionTable,
       providerId,
       log.changedById || '',
-      log.action || '',
       changedAtKey
     ].join('|')
 
@@ -1304,9 +1303,21 @@ const getRevisionSummary = async ({ revision, revisionTable, ...log }) => {
         })
         .filter(Boolean)
 
-      activity = log.action === 'create'
-        ? 'Provider academic years added'
-        : 'Provider academic years updated'
+      const earlierLog = await ActivityLog.findOne({
+        where: {
+          revisionTable: 'provider_academic_year_revisions',
+          changedAt: { [Op.lt]: log.changedAt }
+        },
+        include: [{
+          model: ProviderAcademicYearRevision,
+          as: 'providerAcademicYearRevision',
+          where: { providerId: revision.providerId },
+          required: true
+        }]
+      })
+      activity = earlierLog
+        ? 'Provider academic years updated'
+        : 'Provider academic years added'
       label = providerText
       href = providerHref
 
@@ -1581,7 +1592,7 @@ function buildProviderAcademicYearWhere (providerId, asOf) {
   return {
     providerId,
     createdAt: { [Op.lte]: asOf },
-    [Op.or]: [{ deletedAt: null }, { deletedAt: { [Op.gte]: asOf } }]
+    [Op.or]: [{ deletedAt: null }, { deletedAt: { [Op.gt]: asOf } }]
   }
 }
 
